@@ -2,6 +2,7 @@
 
 import { Pokemon } from '@/types/pokemon';
 import Image from 'next/image';
+import PokemonRadarChart from './PokemonRadarChart';
 
 interface PokemonCardProps {
   pokemon: Pokemon;
@@ -52,7 +53,7 @@ export default function PokemonCard({ pokemon }: PokemonCardProps) {
           {pokemon.id.toString().padStart(3, '0')}
         </p>
       </div>
-      
+
       <div className="text-center">
         <div className="relative w-32 h-32 mx-auto mb-4">
           <Image
@@ -63,11 +64,11 @@ export default function PokemonCard({ pokemon }: PokemonCardProps) {
             sizes="128px"
           />
         </div>
-        
+
         <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-2 capitalize">
           {pokemon.name}
         </h3>
-        
+
         <div className="flex justify-center gap-1 mb-4">
           {pokemon.types.map((type) => (
             <span
@@ -78,28 +79,15 @@ export default function PokemonCard({ pokemon }: PokemonCardProps) {
             </span>
           ))}
         </div>
-        
-        <div className="space-y-2">
-          <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">ステータス</h4>
-          <div className="grid grid-cols-2 gap-2 text-xs">
-            {pokemon.stats.map((stat) => (
-              <div key={stat.stat.name} className="flex justify-between">
-                <span className="text-gray-600 dark:text-gray-400">
-                  {getStatName(stat.stat.name)}
-                </span>
-                <span className="font-medium text-gray-800 dark:text-white">
-                  {stat.base_stat}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-        
+
         <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
           <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
             <span>高さ: {pokemon.height / 10}m</span>
             <span>重さ: {pokemon.weight / 10}kg</span>
           </div>
+        </div>
+        <div className="space-y-2 pt-4">
+          <PokemonRadarChart pokemon={pokemon} />
         </div>
       </div>
     </div>
