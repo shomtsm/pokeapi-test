@@ -10,26 +10,26 @@ interface PokemonCardProps {
 export default function PokemonCard({ pokemon }: PokemonCardProps) {
   const getTypeColor = (typeName: string) => {
     const typeColors: { [key: string]: string } = {
-      normal: 'bg-gray-400',
-      fire: 'bg-red-500',
-      water: 'bg-blue-500',
-      electric: 'bg-yellow-400',
-      grass: 'bg-green-500',
-      ice: 'bg-cyan-300',
-      fighting: 'bg-red-700',
-      poison: 'bg-purple-500',
-      ground: 'bg-yellow-600',
-      flying: 'bg-indigo-400',
-      psychic: 'bg-pink-500',
-      bug: 'bg-green-400',
-      rock: 'bg-yellow-800',
-      ghost: 'bg-purple-700',
-      dragon: 'bg-indigo-700',
-      dark: 'bg-gray-800',
-      steel: 'bg-gray-500',
-      fairy: 'bg-pink-300',
+      normal: 'border-gray-400 text-gray-400',
+      fire: 'border-red-500 text-red-500',
+      water: 'border-blue-500 text-blue-500',
+      electric: 'border-yellow-400 text-yellow-400',
+      grass: 'border-green-500 text-green-500',
+      ice: 'border-cyan-300 text-cyan-300',
+      fighting: 'border-red-700 text-red-700',
+      poison: 'border-purple-500 text-purple-500',
+      ground: 'border-yellow-600 text-yellow-600',
+      flying: 'border-indigo-400 text-indigo-400',
+      psychic: 'border-pink-500 text-pink-500',
+      bug: 'border-green-400 text-green-400',
+      rock: 'border-yellow-800 text-yellow-800',
+      ghost: 'border-purple-700 text-purple-700',
+      dragon: 'border-indigo-700 text-indigo-700',
+      dark: 'border-gray-800 text-gray-800',
+      steel: 'border-gray-500 text-gray-500',
+      fairy: 'border-pink-300 text-pink-300',
     };
-    return typeColors[typeName] || 'bg-gray-400';
+    return typeColors[typeName] || 'border-gray-400 text-gray-400';
   };
 
   const getStatName = (statName: string) => {
@@ -45,7 +45,14 @@ export default function PokemonCard({ pokemon }: PokemonCardProps) {
   };
 
   return (
-    <div className="pokemon-card bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 transition-shadow duration-300 animate-fade-in">
+    <div className="pokemon-card bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 transition-shadow duration-300 animate-fade-in relative">
+      {/* ポケモン番号を右上に配置 */}
+      <div className="absolute top-1 right-1 px-2 py-1">
+        <p className="text-sm font-bold text-white opacity-10">
+          {pokemon.id.toString().padStart(3, '0')}
+        </p>
+      </div>
+      
       <div className="text-center">
         <div className="relative w-32 h-32 mx-auto mb-4">
           <Image
@@ -61,15 +68,11 @@ export default function PokemonCard({ pokemon }: PokemonCardProps) {
           {pokemon.name}
         </h3>
         
-        <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
-          No. {pokemon.id.toString().padStart(3, '0')}
-        </p>
-        
-        <div className="flex justify-center gap-2 mb-4">
+        <div className="flex justify-center gap-1 mb-4">
           {pokemon.types.map((type) => (
             <span
               key={type.slot}
-              className={`px-3 py-1 rounded-full text-white text-sm font-medium ${getTypeColor(type.type.name)}`}
+              className={`px-2 py-0.5 rounded-full text-xs font-medium border ${getTypeColor(type.type.name)}`}
             >
               {type.type.name}
             </span>
