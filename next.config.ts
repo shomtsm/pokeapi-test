@@ -1,8 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Development configuration - no standalone output needed
-  // output: 'standalone', // Only needed for production builds
   images: {
     remotePatterns: [
       {
@@ -12,6 +10,11 @@ const nextConfig: NextConfig = {
         pathname: '/PokeAPI/sprites/**',
       },
     ],
+  },
+  logging: {
+    fetches: {
+      fullUrl: false,
+    },
   },
 };
 
