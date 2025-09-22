@@ -13,19 +13,11 @@ export default function PokemonList({ pokemon }: PokemonListProps) {
     const pathname = usePathname();
     const searchParams = useSearchParams();
 
-    const [searchTerm, setSearchTerm] = useState('');
-    const [typeFilter, setTypeFilter] = useState('all');
-    const [sortBy, setSortBy] = useState<'id' | 'name' | 'height' | 'weight'>('id');
-
-    useEffect(() => {
-        const search = searchParams.get('search') || '';
-        const type = searchParams.get('type') || 'all';
-        const sort = (searchParams.get('sort') as 'id' | 'name' | 'height' | 'weight') || 'id';
-
-        setSearchTerm(search);
-        setTypeFilter(type);
-        setSortBy(sort);
-    }, []);
+    const [searchTerm, setSearchTerm] = useState(() => searchParams.get('search') || '');
+    const [typeFilter, setTypeFilter] = useState(() => searchParams.get('type') || 'all');
+    const [sortBy, setSortBy] = useState<'id' | 'name' | 'height' | 'weight'>(() =>
+        (searchParams.get('sort') as 'id' | 'name' | 'height' | 'weight') || 'id'
+    );
 
     const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
