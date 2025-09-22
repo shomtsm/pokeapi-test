@@ -4,6 +4,7 @@ import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { Pokemon } from '@/types/pokemon';
 import PokemonCard from './PokemonCard';
+import PokemonDetailModal from './PokemonDetailModal';
 
 interface PokemonListProps {
     pokemon: Pokemon[];
@@ -18,6 +19,8 @@ export default function PokemonList({ pokemon }: PokemonListProps) {
     const [sortBy, setSortBy] = useState<'id' | 'name' | 'height' | 'weight'>(() =>
         (searchParams.get('sort') as 'id' | 'name' | 'height' | 'weight') || 'id'
     );
+    const [selectedPokemon, setSelectedPokemon] = useState<Pokemon | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -40,6 +43,16 @@ export default function PokemonList({ pokemon }: PokemonListProps) {
 
     useEffect(() => () => {
         if (debounceRef.current) clearTimeout(debounceRef.current);
+    }, []);
+
+    const handlePokemonClick = useCallback((pokemon: Pokemon) => {
+        setSelectedPokemon(pokemon);
+        setIsModalOpen(true);
+    }, []);
+
+    const handleCloseModal = useCallback(() => {
+        setIsModalOpen(false);
+        setSelectedPokemon(null);
     }, []);
 
     const allTypes = useMemo(() => {
@@ -78,7 +91,7 @@ export default function PokemonList({ pokemon }: PokemonListProps) {
 
     return (
         <div className="w-full max-w-7xl mx-auto p-4">
-            <div className="mb-8 space-y-4">
+            <div className="space-y-4 my-24">
                 <div className="text-center">
                     <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-2">
                         ポケモン図鑑
@@ -140,7 +153,11 @@ export default function PokemonList({ pokemon }: PokemonListProps) {
             {filteredAndSortedPokemon.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
                     {filteredAndSortedPokemon.map((pokemon) => (
-                        <PokemonCard key={pokemon.id} pokemon={pokemon} />
+                        <PokemonCard 
+                            key={pokemon.id} 
+                            pokemon={pokemon} 
+                            onClick={() => handlePokemonClick(pokemon)}
+                        />
                     ))}
                 </div>
             ) : (
@@ -150,6 +167,12 @@ export default function PokemonList({ pokemon }: PokemonListProps) {
                     </p>
                 </div>
             )}
+
+            <PokemonDetailModal
+                pokemon={selectedPokemon}
+                isOpen={isModalOpen}
+                onClose={handleCloseModal}
+            />
         </div>
     );
 }
