@@ -12,24 +12,24 @@ interface PokemonCardProps {
 export default function PokemonCard({ pokemon, onClick }: PokemonCardProps) {
 
   return (
-    <div 
-      className="pokemon-card bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 transition-all duration-300 animate-fade-in relative cursor-pointer hover:shadow-xl hover:scale-105"
+    <div
+      className="pokemon-card bg-white dark:bg-gray-800 rounded-lg shadow-lg p-3 transition-all duration-300 animate-fade-in relative cursor-pointer hover:shadow-xl hover:scale-105"
       onClick={onClick}
     >
-      <div className="absolute top-2 right-2 px-2 py-1">
+      <div className="absolute top-2 left-2 px-2 py-1">
         <p className="text-xs font-bold text-gray-400 dark:text-gray-500">
           #{pokemon.id.toString().padStart(3, '0')}
         </p>
       </div>
 
       <div className="text-center">
-        <div className="relative w-24 h-24 mx-auto mb-3">
+        <div className="relative w-36 h-36 mx-auto mb-2">
           <Image
             src={pokemon.sprites.other?.['official-artwork']?.front_default || pokemon.sprites.front_default}
             alt={pokemon.name}
             fill
             className="object-contain"
-            sizes="96px"
+            sizes="128px"
           />
         </div>
 

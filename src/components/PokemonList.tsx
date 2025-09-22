@@ -21,6 +21,7 @@ export default function PokemonList({ pokemon }: PokemonListProps) {
     );
     const [selectedPokemon, setSelectedPokemon] = useState<Pokemon | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isScrolled, setIsScrolled] = useState(false);
 
     const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -40,6 +41,16 @@ export default function PokemonList({ pokemon }: PokemonListProps) {
         if (debounceRef.current) clearTimeout(debounceRef.current);
         debounceRef.current = setTimeout(() => writeURL(newSearch, newType, newSort), 300);
     }, [writeURL]);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            const scrollTop = window.scrollY;
+            setIsScrolled(scrollTop > 200);
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
     useEffect(() => () => {
         if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -89,8 +100,65 @@ export default function PokemonList({ pokemon }: PokemonListProps) {
         return filtered;
     }, [pokemon, searchTerm, typeFilter, sortBy]);
 
+    const SearchFilterUI = ({ isFixed = false }: { isFixed?: boolean }) => (
+        <div className={`flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch justify-center ${isFixed ? 'px-3 sm:px-4 py-2 sm:py-3' : ''}`}>
+            <div className="relative flex-1 max-w-md">
+                <input
+                    type="text"
+                    placeholder="ポケモン名または番号で検索..."
+                    value={searchTerm}
+                    onChange={(e) => {
+                        const newValue = e.target.value;
+                        setSearchTerm(newValue);
+                        debouncedWriteURL(newValue, typeFilter, sortBy);
+                    }}
+                    className="w-full h-9 sm:h-10 px-3 sm:px-4 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white bg-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                />
+            </div>
+
+            <select
+                value={typeFilter}
+                onChange={(e) => {
+                    const newValue = e.target.value;
+                    setTypeFilter(newValue);
+                    writeURL(searchTerm, newValue, sortBy);
+                }}
+                className="h-9 sm:h-10 px-3 sm:px-4 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white bg-white cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+            >
+                <option value="all">全タイプ</option>
+                {allTypes.map(type => (
+                    <option key={type} value={type}>
+                        {type}
+                    </option>
+                ))}
+            </select>
+
+            <select
+                value={sortBy}
+                onChange={(e) => {
+                    const newValue = e.target.value as typeof sortBy;
+                    setSortBy(newValue);
+                    writeURL(searchTerm, typeFilter, newValue);
+                }}
+                className="h-9 sm:h-10 px-3 sm:px-4 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white bg-white cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+            >
+                <option value="id">図鑑番号順</option>
+                <option value="name">名前順</option>
+                <option value="height">高さ順</option>
+                <option value="weight">重さ順</option>
+            </select>
+        </div>
+    );
+
     return (
         <div className="w-full max-w-7xl mx-auto p-4">
+            <div className={`fixed top-0 left-0 right-0 z-50 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700 transition-all duration-300 ${isScrolled ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'
+                }`}>
+                <div className="max-w-7xl mx-auto">
+                    <SearchFilterUI isFixed={true} />
+                </div>
+            </div>
+
             <div className="space-y-4 my-24">
                 <div className="text-center">
                     <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-2">
@@ -101,61 +169,15 @@ export default function PokemonList({ pokemon }: PokemonListProps) {
                     </p>
                 </div>
 
-                <div className="flex flex-col sm:flex-row gap-4 items-stretch justify-center">
-                    <div className="relative flex-1 max-w-md">
-                        <input
-                            type="text"
-                            placeholder="ポケモン名または番号で検索..."
-                            value={searchTerm}
-                            onChange={(e) => {
-                                const newValue = e.target.value;
-                                setSearchTerm(newValue);
-                                debouncedWriteURL(newValue, typeFilter, sortBy);
-                            }}
-                            className="w-full h-10 px-4 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                        />
-                    </div>
-
-                    <select
-                        value={typeFilter}
-                        onChange={(e) => {
-                            const newValue = e.target.value;
-                            setTypeFilter(newValue);
-                            writeURL(searchTerm, newValue, sortBy);
-                        }}
-                        className="h-10 px-4 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                    >
-                        <option value="all">全タイプ</option>
-                        {allTypes.map(type => (
-                            <option key={type} value={type}>
-                                {type}
-                            </option>
-                        ))}
-                    </select>
-
-                    <select
-                        value={sortBy}
-                        onChange={(e) => {
-                            const newValue = e.target.value as typeof sortBy;
-                            setSortBy(newValue);
-                            writeURL(searchTerm, typeFilter, newValue);
-                        }}
-                        className="h-10 px-4 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                    >
-                        <option value="id">図鑑番号順</option>
-                        <option value="name">名前順</option>
-                        <option value="height">高さ順</option>
-                        <option value="weight">重さ順</option>
-                    </select>
-                </div>
+                <SearchFilterUI />
             </div>
 
             {filteredAndSortedPokemon.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
                     {filteredAndSortedPokemon.map((pokemon) => (
-                        <PokemonCard 
-                            key={pokemon.id} 
-                            pokemon={pokemon} 
+                        <PokemonCard
+                            key={pokemon.id}
+                            pokemon={pokemon}
                             onClick={() => handlePokemonClick(pokemon)}
                         />
                     ))}
