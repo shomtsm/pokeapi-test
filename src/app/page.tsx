@@ -1,8 +1,10 @@
+import { Suspense } from 'react';
 import { getFirstGenerationPokemon } from '@/lib/pokemon-api';
 import PokemonList from '@/components/PokemonList';
+import LoadingSpinner from '@/components/LoadingSpinner';
 import { Pokemon } from '@/types/pokemon';
 
-export default async function Home() {
+async function PokemonContent() {
   let pokemon: Pokemon[] = [];
   let error: string | null = null;
 
@@ -33,5 +35,13 @@ export default async function Home() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <PokemonList pokemon={pokemon} />
     </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <PokemonContent />
+    </Suspense>
   );
 }
