@@ -1,6 +1,6 @@
 services:
   web:
-    container_name: pockapi-coding-test
+    container_name: pokeapi-coding-test
     build:
       context: .
     ports:
